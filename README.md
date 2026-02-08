@@ -20,7 +20,7 @@ Ce projet implémente une solution complète de reconnaissance faciale en temps 
 
 ---
 
-## 🔧 Guide d'Installation
+## Guide d'Installation
 
 ### Prérequis
 
