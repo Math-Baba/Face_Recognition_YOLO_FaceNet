@@ -383,14 +383,6 @@ psycopg2.OperationalError: could not connect to server
 
 ---
 
-## Notes de Sécurité
-
-- **Stockage d'embeddings** : Les vecteurs de visages ne permettent pas de reconstruire l'image originale
-- **Données sensibles** : Gérer les fichiers `.env` et la base de données PostgreSQL avec attention
-- **Précision** : Ce système n'est pas 100% fiable, utiliser avec prudence pour les applications critiques
-
----
-
 ## Auteur
 
 - **Math-Baba** - [GitHub](https://github.com/Math-Baba)
