@@ -114,10 +114,34 @@ python app/main.py
 - La webcam s'ouvre et affiche le flux vidéo en temps réel
 - Les visages **reconnus** s'affichent en **vert** avec le nom et la distance de confiance
 - Les visages **inconnus** s'affichent en **orange**
-- Les inconnus sont accumulés jusqu'à **3 échantillons** avant d'être enregistrés
+- Les inconnus sont accumulés jusqu'à **5 échantillons** avant d'être enregistrés
 - Appuyer sur **ESC** pour quitter
 
-### 2. Enregistrer les visages inconnus détectés
+### 2. Enregistrer les visages inconnus (à faire correctement)
+
+**Important — une seule personne à la fois :** pour éviter les mélanges d'embeddings et les mauvaises reconnaissances, enregistrez **une personne à la fois** devant la caméra.
+
+**Étapes recommandées :**
+
+1. **Lancer la reconnaissance**
+   ```bash
+   python app/main.py
+   ```
+2. **Faire apparaître une seule personne** devant la webcam (pas plusieurs).
+3. **Attendre quelques secondes** : le visage doit rester marqué **UNKNOWN** (orange) le temps que 5 échantillons soient collectés (quelques secondes).
+4. **Quitter** avec **ESC**.
+5. **Enregistrer le visage**
+   ```bash
+   python app/register_faces.py
+   ```
+   - Choisir l’option **1** (Enregistrer) et saisir le prénom de la personne.
+6. **Répéter pour chaque nouvelle personne** : relancer `main.py`, mettre **uniquement** la prochaine personne devant la caméra, attendre, quitter, puis lancer `register_faces.py` pour l’enregistrer.
+
+**À éviter :**
+- Plusieurs visages inconnus en même temps devant la caméra lors de la collecte (risque de mélanger les embeddings).
+- Enregistrer plusieurs personnes d’un coup sans quitter et relancer entre chaque.
+
+### 3. Enregistrer les visages inconnus détectés (détails)
 
 ```bash
 python app/register_faces.py
@@ -131,13 +155,27 @@ python app/register_faces.py
   3. **Supprimer** : Effacer le visage de la base
   4. **Quitter** : Sortir du programme
 
-### 3. Récupérer les visages inconnus
+### 4. Repartir de zéro (réinitialisation)
+
+Si les reconnaissances sont incorrectes (noms mélangés, tout en UNKNOWN), vous pouvez repartir de zéro :
+
+1. **Supprimer les visages inconnus locaux**  
+   Supprimer le fichier : `data/unknown_faces/unknown_embeddings.pkl` (et éventuellement les images `.jpg` dans ce dossier).
+
+2. **Vider la table des personnes** (dans PostgreSQL) :
+   ```sql
+   DELETE FROM persons;
+   ```
+
+3. **Réenregistrer chaque personne** en suivant les étapes du §2 (une personne à la fois).
+
+### 5. Récupérer les visages inconnus
 
 Les visages inconnus sont automatiquement sauvegardés dans :
 ```
 data/unknown_faces/
-├── unknown_face_timestamp1.jpg
-├── unknown_face_timestamp2.jpg
+├── unknown_YYYYMMDD_HHMMSS.jpg
+├── unknown_embeddings.pkl
 └── ...
 ```
 

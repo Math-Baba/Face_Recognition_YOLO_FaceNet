@@ -45,8 +45,17 @@ class Database:
         self.cur.execute("SELECT first_name, embedding FROM persons")
         rows = self.cur.fetchall()
 
-        # Reconversion des embeddings en numpy array
-        return [(name, np.array(embedding)) for name, embedding in rows]
+        # Reconversion des embeddings en numpy array (assure forme 1D, 512 dims)
+        result = []
+        for name, embedding in rows:
+            if embedding is None:
+                continue
+            arr = np.array(embedding, dtype=float).flatten()
+            if len(arr) != 512:
+                print(f"[WARN] Embedding pour {name}: mauvaise taille {len(arr)}, attendu 512")
+                continue
+            result.append((name, arr))
+        return result
 
     # Ferme proprement la connexion à la db
     def close(self):

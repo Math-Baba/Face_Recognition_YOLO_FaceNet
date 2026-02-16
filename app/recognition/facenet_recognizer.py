@@ -80,20 +80,33 @@ class FaceRecognizer:
         dist = self.cosine_distance(emb1, emb2)
         return dist < threshold, dist
 
-    # Recherche la meilleure correspondance dans la base de données
-    def find_best_match(self, embedding, persons_db, threshold=0.4):
+    # Recherche la meilleure correspondance dans la base de données.
+    # Ajoute une marge de confiance : si la 2e meilleure est trop proche de la 1re,
+    # on considère la match ambigu et on retourne None (évite les confusions).
+    def find_best_match(self, embedding, persons_db, threshold=0.4, confidence_margin=0.02):
         if not persons_db or embedding is None:
             return None, float('inf')
 
-        best_match = None
-        best_distance = float('inf')
-
+        distances = []
         for person_name, person_emb in persons_db:
             if person_emb is None:
                 continue
             _, dist = self.compare_embeddings(embedding, person_emb, threshold)
-            if dist < best_distance:
-                best_distance = dist
-                best_match = person_name if dist < threshold else None
+            distances.append((person_name, dist))
 
-        return best_match, best_distance
+        if not distances:
+            return None, float('inf')
+
+        # Tri par distance croissante
+        distances.sort(key=lambda x: x[1])
+        best_name, best_dist = distances[0]
+        second_dist = distances[1][1] if len(distances) > 1 else float('inf')
+
+        # Match valide si distance sous le seuil
+        if best_dist >= threshold:
+            return None, best_dist
+        # Marge de confiance : si activée et 2e trop proche, rejeter (evite confusions)
+        if confidence_margin > 0 and second_dist - best_dist < confidence_margin:
+            return None, best_dist
+
+        return best_name, best_dist
