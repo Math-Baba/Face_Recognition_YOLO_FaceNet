@@ -20,7 +20,7 @@ Ce projet implémente une solution complète de reconnaissance faciale en temps 
 
 ---
 
-## 🔧 Guide d'Installation
+## Guide d'Installation
 
 ### Prérequis
 
@@ -418,14 +418,6 @@ psycopg2.OperationalError: could not connect to server
 - Ne pas utiliser d'autres applications gourmandes
 - Utiliser CUDA si disponible : `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
 - Réduire la résolution d'entrée (modifier dans `yolo_detector.py`)
-
----
-
-## Notes de Sécurité
-
-- **Stockage d'embeddings** : Les vecteurs de visages ne permettent pas de reconstruire l'image originale
-- **Données sensibles** : Gérer les fichiers `.env` et la base de données PostgreSQL avec attention
-- **Précision** : Ce système n'est pas 100% fiable, utiliser avec prudence pour les applications critiques
 
 ---
 
